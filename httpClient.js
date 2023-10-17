@@ -14,10 +14,21 @@ const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use((config) => {
-  config.headers["Content-Type"] = "application/json";
+  if (
+    !config.headers["Content-Type"] ||
+    typeof config.headers["Content-Type"] === "undefined"
+  ) {
+    config.headers["Content-Type"] = "application/json";
+  }
+  // console.log(
+  //   ">>>>>>>>>>>>>>>>>>>> config.headers=",
+  //   Buffer.byteLength(JSON.stringify(config.data))
+  // );
+
   config.headers["x-date"] = new Date().toISOString().replace(/.\d+Z$/g, "Z");
   config.headers["x-req-id"] = crypto.randomUUID();
   config.headers["x-device-id"] = DEVICE_ID;
+  config.headers["Accept"] = "application/json";
 
   config.params["ts"] = +new Date();
 
@@ -26,56 +37,24 @@ httpClient.interceptors.request.use((config) => {
       config,
       config.signerSecretKey,
       SIGNED_HEADERS,
-      config.baseURL
+      config.baseURL,
+      "skipBodyHash" in config ? config.skipBodyHash : false
     );
     config.headers["x-hmac-tag"] = x_hmac_tag;
-    console.log(x_hmac_tag, 'xxx')
   }
   return config;
 });
 
 httpClient.interceptors.response.use(
   (resp) => {
-     console.log(">>>>>>>>>>>>>>>>>>>> resp.headers=");
-    // For status code with 2xx
-    const x_srv_signature = resp.headers["x-srv-signature"];
-    const x_hmac_tag = resp.config.headers["x-hmac-tag"];
-
-    if (
-      typeof x_srv_signature === "undefined" ||
-      typeof x_hmac_tag === "undefined"
-    ) {
-      resp.data = {
-        status: "FAIL",
-        err: {
-          msg: "invalid sign",
-        },
-      };
-      return resp;
-    }
-
-    try {
-      const body = JSON.stringify(resp.data);
-      const isVerified = verifySign(x_hmac_tag, body, x_srv_signature);
-      if (!isVerified) {
-        resp.data = {
-          status: "FAIL",
-          err: {
-            code: 10000,
-            msg: "invalid sign",
-          },
-        };
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // console.log(">>>>>>>>>>>>>>>>>>>> resp.headers=", resp.headers);
 
     return resp;
   },
   async (error) => {
-    const err = error.response?.data?.detail?.err;
+    const err = error.response;
     // err={err:{code,msg}}
-    console.log(err, 'errr');
+    console.log(err);
     if (err?.code == 20010) {
       // make a call to refresh token
       // await getRefreshToken(JWT_TOKENS.refresh);

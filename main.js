@@ -23,7 +23,14 @@ const {
   logout,
 } = require("./reqs/req_others");
 
-const { reqGet, reqPost } = require("./reqs/agent_svc_req");
+const {
+  reqGet,
+  reqPost,
+  reqPutKyc,
+  reqGetQR,
+  reqPostForm,
+} = require("./reqs/agent_svc_req");
+
 const {
   createUserPin,
   forgotPin,
@@ -50,44 +57,48 @@ const { refreshAccessToken } = require("./reqs/refresh_access_token");
     phone: "1234567890",
   };
 
-  // // on changing device, chk device_id + fcm_reg_token is changed properly in db
+  // on changing device, chk device_id + fcm_reg_token is changed properly in db
   // [createUser] returns access token
-   
   // await createUser(usr_data);
   // return;
 
-  const access_token1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk2OTYxMTIxLCJuYmYiOjE2OTY5NjExMjEsImp0aSI6IjFmODQxMDk2ZmI1ZGY0NzY0YTQ2YzJmYmM1N2FhNmI0NjlkOGIxZTE2ODJjYmFhZjU4ZTVhNjVlOGNkY2Q4ODkiLCJleHAiOjE2OTY5NzU1MjEsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZSwiaW50ZW50Ijp7InRva2VuIjoiZDBhYmI0YTQtOWNjOC00MDQzLWEyMGMtMzdiMzQxYjViNTJhIiwiYWN0aW9uIjoiVVNFUi1SRUdJU1RFUiJ9LCJwcmUtc2lnbnVwIjp0cnVlfQ.Uanx5daPDQcXM--xdkTU0ffjacaOBuIOLA9aXKeBJgs'
-    // const access_token1 = await createUser(usr_data);
+  const access_token1 =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk3NDczNjE0LCJuYmYiOjE2OTc0NzM2MTQsImp0aSI6IjgyZTlmYWUwZjQ1ZWYyNzg5ZmU4YTAyYmZiNDAwNTEzZTNmY2JlMmExMDc0ZDFjNWEwMWNhNGU3YTg0Yjk1MTUiLCJleHAiOjE2OTc0ODgwMTQsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZSwiaW50ZW50Ijp7InRva2VuIjoiZmVhNDJmMTctNmQxYS00N2JiLTlmZjktOWRhMjU0ODk0OTlkIiwiYWN0aW9uIjoiVVNFUi1SRUdJU1RFUiJ9LCJwcmUtc2lnbnVwIjp0cnVlfQ.13_MrKjGNv1088gt5UfyUNNVE1F8-XP2wwYfYl-gmh8";
+
+  ///const access_token1 = await createUser(usr_data);
 
   // [resendOTP] doesnot return any token
-  
   // await resendOTP(usr_data, access_token1);
 
   // [verifySignupOTP] returns access token
-  // await verifySignupOTP(usr_data, access_token1, "117123");
+  console.log('~~~~~~~~~~~~~vwerify~~~~~~~~~~~~~~~~')
+  //  await verifySignupOTP(usr_data, access_token1, "117123");
   // return;
 
   // -----------------------------------------------------------------------------------
-  const fresh_access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk2OTYxMTQ5LCJuYmYiOjE2OTY5NjExNDksImp0aSI6IjFmMDU3ZTM0ZWJiNDM4ODZkOGRlYjVhZWJhNTc3Y2FiMmIyYTM4ZGFiYTM4NzIwOWM0NjVkMTYxNTYwNzY0M2QiLCJleHAiOjE2OTY5NzU1NDksInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZSwiaW50ZW50Ijp7InRva2VuIjoiNjAwMDliMTgtMzZjZS00YTVjLWEzZWQtMGNmZjJiM2YxZDE4IiwiYWN0aW9uIjoiSU5JVC1QSU4ifX0.Oyt1ymEx5PcQVlyIVK1wDwlN7sPqnAt08bedPhC9-wo'
+  const fresh_access_token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk3NDczNjUwLCJuYmYiOjE2OTc0NzM2NTAsImp0aSI6IjgxMTQ2MTAwZDM2ZjFiY2U0NDYwNGNhNWUwOWQzZDUyNDcyMzNmYWNjMjQyYzE3YjI1YjYxYTc1MjYwNTMzY2UiLCJleHAiOjE2OTc0ODgwNTAsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZSwiaW50ZW50Ijp7InRva2VuIjoiMGUxNDkzYjQtNWY2YS00MDg0LWFlM2QtMTliNzE2YWYzODhjIiwiYWN0aW9uIjoiSU5JVC1QSU4ifX0.LZpaCBqNazr_4s3SYC9SJjZCMIWT1FU3zYN9BOytVuE";
+
   JWT_TOKENS.access = fresh_access_token;
 
   // [createUserPin] returns access/refresh token and ppk
-  // pin is neither stored nor logged anywhere in app (neither in-memory nor persistent)
-  // await createUserPin(usr_data, JWT_TOKENS.access, "1234");
-  // createUserPin,
+  // // // pin is neither stored nor logged anywhere in app (neither in-memory nor persistent)
+  // await createUserPin(usr_data, "1234", JWT_TOKENS.access);
+  // return;
+
   // -----------------------------------------------------------------------------------
   // [access_token] expires in 15min types...call refreshAccessToken after that
   const access_token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk2OTYxMjg4LCJuYmYiOjE2OTY5NjEyODgsImp0aSI6ImY4YjNjNzhiNjk1MjQ1OWU3YThlYmVlYzU4NDU5NTQxNzRhMDcxMWQzMmRiMGVjZDhiYWIwNmQ4YjQwMDk5ZjciLCJleHAiOjE2OTY5NzU2ODgsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZX0.WNjsSWmqdsbdfz5zK5HUhR64mE7Z2IWkhgsf6P4IB6Q";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk3NDczNzEyLCJuYmYiOjE2OTc0NzM3MTIsImp0aSI6IjY4MmM4ODk2NzUzZTA2NDcwZGVjOWZkMGUxMTc4N2E3ZDI1MmNiNzNmY2QwMjkxYzRkYzMzYjI4ZDcwYmU5MTIiLCJleHAiOjE2OTc0ODgxMTIsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.vVwDZwm89boBWXqPFu9QHdVKvtrz_cqwIhZ__RUptEo";
   // [refresh_token] expires in 90days types..call loginViaPin after that
   const refresh_token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk2OTYxMjg4LCJuYmYiOjE2OTY5NjEyODgsImp0aSI6IjMwNTNmZmY0YmQ5ZjUwYWY2NDcxMTNkM2E2MmI0NGE0NjQ0MTMwNzFkYjdjOWVhZjM5ZDg3M2IwZmIxMzIwYzkiLCJleHAiOjE3MDQ3MzcyODgsInR5cGUiOiJyZWZyZXNoIn0.aeS10mVCfEFVmrRBaA4ni5_W-aVZ6Gu38uNcZZLFwdw";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk3NDczNzEyLCJuYmYiOjE2OTc0NzM3MTIsImp0aSI6ImFkZmRkNWFmZGNlZTA0YWY3M2Y2OTdlM2RkZmJhMGIxNzcyOTc2YTc1Yzc4MWQyYTE4MTRiNTE1ZTY4ZTA5YzAiLCJleHAiOjE3MDUyNDk3MTIsInR5cGUiOiJyZWZyZXNoIn0.lqy5iM9kN0QT49UTE26Y1dWQESeAJlHxCyEKPah8dLo";
 
   JWT_TOKENS.access = access_token;
   JWT_TOKENS.refresh = refresh_token;
 
-  // this key is generated in createUserPin.. has to be stored in app keystore/keychain securely
-  const secretKey = "gUf/VGe9gsHRB2h5p6kGQSikJyKXpsRAfJtgAKr4g3s==";
+  // // this key is generated in createUserPin.. has to be stored in app keystore/keychain securely
+  const secretKey = "5WH/tFHN5Apq9pNdoMSAKEjVmD+g6BBKclojN6Ku+Ak=";
 
   // -----------------------------------------------------------------------------------
   // ***************** [refreshAccessToken] if resp access token expired then call this and then call original req
@@ -113,12 +124,12 @@ const { refreshAccessToken } = require("./reqs/refresh_access_token");
   // this is calledw ith access_token returned from sendotp above
   // await verifyAnyOtherOTP(usr_data, secretKey, JWT_TOKENS.access, "117123");
 
-  // these ae actual calls made with above returned access token
+  ////// these ae actual calls made with above returned access token
   // await plainReqPost_otp_Verifiable(secretKey, JWT_TOKENS.access);
 
   // -----------------------------------------------------------------------------------
   // ***************** [general requests] called with access token
-  // // -----------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------
   // await plainReqPost(secretKey, JWT_TOKENS.access);
   // await plainReqGet(secretKey, JWT_TOKENS.access);
   // await encReqPost(secretKey, JWT_TOKENS.access);
@@ -134,9 +145,9 @@ const { refreshAccessToken } = require("./reqs/refresh_access_token");
     action: "EDIT-USER-PROFILE",
   };
   // this returns a [fresh] access token with intent
-  await verifyPin(usr_data, secretKey, JWT_TOKENS.refresh, "1234", intent);
+  // await verifyPin(usr_data, secretKey, JWT_TOKENS.refresh, "1237", intent);
 
-  // these ae actual calls made with above returned access token
+  ////// these ae actual calls made with above returned access token
   // await encReqPost_pinVerifiable(secretKey, JWT_TOKENS.access);
   // await plainReqPost_pin_Verifiable(secretKey, JWT_TOKENS.access);
 
@@ -153,7 +164,7 @@ const { refreshAccessToken } = require("./reqs/refresh_access_token");
   //    - if refresh token is revoked, like on logout
   //    - if refresh token expires, then cant call verify-pin
   // -----------------------------------------------------------------------------------
-   await loginViaPin(usr_data, "1234");
+  // await loginViaPin(usr_data, "1234");
 
   // -----------------------------------------------------------------------------------
   // ***************** [forgot-pin] start *********************
@@ -162,14 +173,41 @@ const { refreshAccessToken } = require("./reqs/refresh_access_token");
   // await forgotPin(usr_data);
 
   // forgot pin will send sms with a url with qs <token>
-  // http://127.0.0.1/v1/pin/forgot-create?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk0OTU2NTgxLCJuYmYiOjE2OTQ5NTY1ODEsImp0aSI6IjlkNGRmYTUyZjVhYTYzYWFhYzY3ZjMzYmM3NDg3ZDNlMDBkOTdhZGJhNjUxZjM4N2U5Nzg5MDA2MjRhOWFiYzEiLCJleHAiOjE2OTUwNjYzODEsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.3w-fXph0z5-pwp7XG7DAg98-E4fyB0k05mC062WrKCo
+  // http://127.0.0.1/api/v1/pin/recreate/7m184hwt1895o
   // this is shortcut url to open app actvity to create pin (cant be open directly in browser)
-  const tmp_access_token2 =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MTEyMzQ1Njc4OTBAMDdmNDI0NDAtY2NmNi00ZTU0LWI4ZjEtMTNiYTY5NzAwNDE2IiwiaWF0IjoxNjk2MTYwOTM3LCJuYmYiOjE2OTYxNjA5MzcsImp0aSI6ImY4NDY4NjkzYzI5ZTNhYTA1MzZiZDVlMDgxOTY1NjZmNDY0OWU4NTQ5ZDFiYmIwYTlmNDBjMTc5NDQ5ZmI4YWEiLCJleHAiOjE2OTYxOTUxMzcsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6dHJ1ZSwiaW50ZW50Ijp7InRva2VuIjoiNzcyMzBkOTgtOTg2Mi00OGFjLWI5YjMtYTVlMDVlNTRlMjY1IiwiYWN0aW9uIjoiRk9SR09ULVBJTiJ9fQ.Som66i4oeFsILTuDxZUcRZ0NNLOj8FZal_aZDzSSEBc";
+  const recreate_token = "7m184hwt1895o";
 
-  // await createUserPin(usr_data, tmp_access_token2, "1237");
+  // await createUserPin(usr_data, "1237", null, recreate_token);
 
   // -----------------------------------------------------------------------------------
   // ***************** [logout] start ********************* revokes both access and refresh tokens
   // await logout(secretKey, JWT_TOKENS.access);
+
+  // -------------------------------------- [Agent-svc] ----------------------------------------------------------
+  await reqPostForm(secretKey, JWT_TOKENS.access);
+  await reqPost(secretKey, JWT_TOKENS.access);
+  await reqPutKyc(secretKey, JWT_TOKENS.access);
+  await reqGet(secretKey, JWT_TOKENS.access);
+  await reqGetQR(secretKey, JWT_TOKENS.access);
 })();
+
+/*
+// forgotPin
+
+<intent-filter>
+  <action android:name="android.intent.action.VIEW"></action>
+  <category android:name="android.intent.category.DEFAULT"></category>
+  <category android:name="android.intent.category.BROWSABLE"></category>
+  <data
+    android:scheme="http"
+    android:host="cardbuzz.in"
+    android:pathPrefix="api/v1/pin/rereate">
+  </data>
+</intent-filter>
+http://www.cardbuzz.in/api/v1/pin/rereate/<recreate_token>
+
+Uri data = getIntent().getData();
+strScreenName = data.toString()
+        .replaceAll("com.some_thing.profile://", "")
+        .replaceAll("@", "");
+*/

@@ -89,7 +89,7 @@ async function verifySignupOTP({ country_code, phone }, access_token, otp) {
     country_code: country_code,
     phone: phone,
     device_id: DEVICE_ID,
-      otp: otp,
+    otp: otp,
     // ts: new Date().toISOString(),
   };
   const data = encPayload(user);

@@ -49,7 +49,12 @@ function genX25519KeyPair() {
   return Buffer.from(pubKeyPem, "utf8").toString("base64");
 }
 
-async function createUserPin({ country_code, phone }, access_token, pin) {
+async function createUserPin(
+  { country_code, phone },
+  pin,
+  access_token,
+  recreate_token = null
+) {
   pubKeyPem_b64 = genX25519KeyPair();
 
   let user = {
@@ -72,15 +77,30 @@ async function createUserPin({ country_code, phone }, access_token, pin) {
   // send to sever
   const config = {
     method: "post",
-    url: `/pin/create`,
+    url: null,
     params: {},
     // body: null,
     data: payload,
     signerSecretKey: data.key,
     headers: {
-      Authorization: `Bearer ${access_token}`,
+      // Authorization: `Bearer ${access_token}`,
     },
   };
+
+  if (
+    typeof access_token !== "undefined" &&
+    access_token !== null &&
+    access_token.length > 0
+  ) {
+    config.url = `/pin/create`;
+    config.headers["Authorization"] = `Bearer ${access_token}`;
+  } else if (
+    typeof recreate_token !== "undefined" &&
+    recreate_token !== null &&
+    recreate_token.length > 0
+  ) {
+    config.url = `/pin/recreate/${recreate_token}`;
+  }
 
   let res;
   try {
