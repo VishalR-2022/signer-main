@@ -1,16 +1,14 @@
 const axios = require("axios");
 const {
+  BBPS_SVC_ENDPOINT,
   SIGNED_HEADERS,
   DEVICE_ID,
-  AUTH_SVC_ENDPOINT,
-  JWT_TOKENS,
-} = require("./constants");
+} = require("./constants_bbps");
 const { sign } = require("./signer");
 const { verifySign } = require("./utils");
-// const { getRefreshToken } = require("./reqs/get_refresh_token");
 
 const httpClient = axios.create({
-  baseURL: `${AUTH_SVC_ENDPOINT}`,
+  baseURL: `${BBPS_SVC_ENDPOINT}`,
 });
 
 httpClient.interceptors.request.use((config) => {
@@ -20,10 +18,6 @@ httpClient.interceptors.request.use((config) => {
   ) {
     config.headers["Content-Type"] = "application/json";
   }
-  // console.log(
-  //   ">>>>>>>>>>>>>>>>>>>> config.headers=",
-  //   Buffer.byteLength(JSON.stringify(config.data))
-  // );
 
   config.headers["x-date"] = new Date().toISOString().replace(/.\d+Z$/g, "Z");
   config.headers["x-req-id"] = crypto.randomUUID();
@@ -47,8 +41,6 @@ httpClient.interceptors.request.use((config) => {
 
 httpClient.interceptors.response.use(
   (resp) => {
-    // console.log(">>>>>>>>>>>>>>>>>>>> resp.headers=", resp.headers);
-
     return resp;
   },
   async (error) => {
@@ -58,11 +50,8 @@ httpClient.interceptors.response.use(
     if (err?.code == 20010) {
       // make a call to refresh token
       // await getRefreshToken(JWT_TOKENS.refresh);
-      // and then call the original req (for which this token expired err came)
     }
 
-    // Status code outside the range of 2xx
-    // handle error cases
     return Promise.reject(error);
   }
 );

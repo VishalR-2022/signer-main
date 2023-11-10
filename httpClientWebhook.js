@@ -1,7 +1,5 @@
 const axios = require("axios");
-const {
-    WALLET_SVC_ENDPOINT: WALLET_SVC_ENDPOINT,
-} = require("./constants");
+const { WALLET_SVC_ENDPOINT } = require("./constants");
 
 const httpClientWeb = axios.create({
   baseURL: `${WALLET_SVC_ENDPOINT}`,
@@ -9,6 +7,7 @@ const httpClientWeb = axios.create({
 
 httpClientWeb.interceptors.request.use((config) => {
   config.headers["Content-Type"] = "application/json";
+
   return config;
 });
 

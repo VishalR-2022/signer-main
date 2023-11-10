@@ -41,6 +41,7 @@ function genX25519KeyPair() {
 
   // store privKeyPem securely in keystore
   const privKeyPem = pk.privateKey.export({ type: "pkcs8", format: "pem" });
+  // console.log(privKeyPem);
 
   const pubKeyPem = pk.publicKey.export({ type: "spki", format: "pem" });
 
@@ -191,4 +192,10 @@ async function loginViaPin({ country_code, phone }, pin) {
   }
 }
 
-module.exports = { createUserPin, forgotPin, loginViaPin };
+module.exports = {
+  createUserPin,
+  forgotPin,
+  loginViaPin,
+  genX25519KeyPair,
+  genSharedSecret,
+};
